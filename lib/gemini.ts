@@ -2,7 +2,9 @@ import 'server-only';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { FortuneResponseSchema, type FortuneResponse } from './schema';
 
-const TIMEOUT_MS = 8_000;
+// 15s — Gemini free tier first-call latency on a Vercel cold start can
+// reach 6-10s; second/warm calls are 1-3s. 8s was too tight in production.
+const TIMEOUT_MS = 15_000;
 const MAX_RETRY = 1;
 
 type CallInput = {
