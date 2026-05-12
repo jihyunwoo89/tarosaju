@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { FortuneRequestSchema, FortuneResponseSchema, ErrorCode } from './schema';
+import { FortuneRequestSchema, FortuneResponseSchema, ErrorCode, categoryLabel } from './schema';
+
+describe('categoryLabel', () => {
+  it('returns correct label for each category', () => {
+    expect(categoryLabel('연애')).toBe('연애운');
+    expect(categoryLabel('금전')).toBe('금전운');
+    expect(categoryLabel('학업')).toBe('학업운');
+    expect(categoryLabel('취업')).toBe('취업운');
+  });
+});
 
 describe('FortuneRequestSchema', () => {
   const validInput = {

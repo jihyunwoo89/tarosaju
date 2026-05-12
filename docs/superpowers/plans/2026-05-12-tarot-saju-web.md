@@ -906,6 +906,14 @@ import { PHASES as PHASE } from './tarot';
 
 export { HOUR_BRANCH, PHASE };
 export const CATEGORY = ['연애', '금전', '학업', '취업'] as const;
+export type Category = (typeof CATEGORY)[number];
+export const CATEGORY_LABEL: Record<Category, string> = {
+  연애: '연애운',
+  금전: '금전운',
+  학업: '학업운',
+  취업: '취업운',
+};
+export const categoryLabel = (c: Category): string => CATEGORY_LABEL[c];
 export const GENDER = ['남', '여'] as const;
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
@@ -1003,9 +1011,12 @@ describe('buildSystemPrompt', () => {
     expect(sys).toMatch(/한국어/);
   });
 
-  it('forbids mystical phrasing keywords', () => {
+  it('mentions each banned word only inside a 금지 rule line', () => {
+    const lines = sys.split('\n');
     for (const banned of ['운명', '숙명', '신비', '계시']) {
-      expect(sys, `system prompt must not contain "${banned}"`).not.toContain(banned);
+      const matchingLines = lines.filter(l => l.includes(banned));
+      expect(matchingLines, `${banned} should appear in exactly one line`).toHaveLength(1);
+      expect(matchingLines[0], `${banned} should be on a 금지 rule line`).toMatch(/금지/);
     }
   });
 
@@ -1076,6 +1087,7 @@ npm run test:run -- lib/prompt
 import type { Pillars } from './saju';
 import type { DrawnCard } from './tarot';
 import type { FortuneRequest } from './schema';
+import { categoryLabel } from './schema';
 
 export function buildSystemPrompt(): string {
   return [
@@ -1083,7 +1095,7 @@ export function buildSystemPrompt(): string {
     '',
     '톤 규칙:',
     '- 차분하고 신뢰감 있는 어조. 시적 절제, 직설보다 함축.',
-    '- 다음 표현은 절대 쓰지 않는다: "운명", "숙명", "신비", "계시".',
+    '- 금지 어휘: "운명", "숙명", "신비", "계시" 같은 단정적·신비주의 표현은 출력하지 않는다.',
     '- 단정적 예언("...할 것입니다") 대신 가능성·태도("...할 여지가 있습니다", "...해 보는 편이 좋습니다").',
     '',
     '구성 규칙:',
@@ -1112,11 +1124,11 @@ export function buildUserPrompt(input: UserPromptInput): string {
   return [
     `사용자: ${name} (${gender}, 양력 ${birthDate}, ${hourBranch}시)`,
     `사주 명식: 년주 ${pillars.year} / 월주 ${pillars.month} / 일주 ${pillars.day} / 시주 ${pillars.hour}`,
-    `카테고리: ${category}운`,
+    `카테고리: ${categoryLabel(category)}`,
     `뽑힌 카드:`,
     cardLines,
     ``,
-    `위 정보를 종합해 "${category}운"에 대해 시스템 규칙을 따라 JSON 으로 풀이해 주세요.`,
+    `위 정보를 종합해 "${categoryLabel(category)}"에 대해 시스템 규칙을 따라 JSON 으로 풀이해 주세요.`,
   ].join('\n');
 }
 ```

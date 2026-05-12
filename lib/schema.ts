@@ -4,6 +4,14 @@ import { PHASES as PHASE } from './tarot';
 
 export { HOUR_BRANCH, PHASE };
 export const CATEGORY = ['연애', '금전', '학업', '취업'] as const;
+export type Category = (typeof CATEGORY)[number];
+export const CATEGORY_LABEL: Record<Category, string> = {
+  연애: '연애운',
+  금전: '금전운',
+  학업: '학업운',
+  취업: '취업운',
+};
+export const categoryLabel = (c: Category): string => CATEGORY_LABEL[c];
 export const GENDER = ['남', '여'] as const;
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
