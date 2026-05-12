@@ -39,7 +39,7 @@ npm run dev
 ### 1) 출시 전 placeholder 정리
 
 - [ ] **LICENSE** 의 `(Your Name)` 을 본인 이름으로 교체
-- [ ] **package.json** 의 `author`, `repository.url`, `homepage`, `bugs.url` 의 `damiao` 가 본인 GitHub username 과 일치하는지 확인. 다르면 4 군데 일괄 변경.
+- [ ] **package.json** 의 `author`, `repository.url`, `homepage`, `bugs.url` 의 `jihyunwoo89` 가 본인 GitHub username 과 일치하는지 확인. 다르면 4 군데 일괄 변경.
 
 ### 2) GitHub 레포 만들기
 
