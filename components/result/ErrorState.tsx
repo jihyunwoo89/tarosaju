@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 
 const COPY: Record<string, string> = {
+  invalid_input: '입력 정보를 다시 확인해 주세요.',
   config_missing: '서비스 설정에 문제가 있어요. 잠시 후 다시 와 주세요.',
   rate_limited: '요청이 잠시 많아요. 10 초 뒤에 다시 시도해 주세요.',
   upstream_error: '풀이 서버가 잠깐 응답하지 못했어요.',

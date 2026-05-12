@@ -1,12 +1,17 @@
 'use client';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 
 export function LoadingState() {
+  const reduce = useReducedMotion();
   return (
-    <main className="min-h-[100dvh] flex flex-col items-center justify-center px-6 text-center">
+    <main
+      role="status"
+      aria-live="polite"
+      className="min-h-[100dvh] flex flex-col items-center justify-center px-6 text-center"
+    >
       <motion.div
-        animate={{ opacity: [0.4, 1, 0.4] }}
-        transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+        animate={reduce ? {} : { opacity: [0.4, 1, 0.4] }}
+        transition={reduce ? {} : { repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
         className="font-display text-2xl"
       >
         풀이를 정리하는 중…
