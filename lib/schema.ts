@@ -13,6 +13,7 @@ export const CATEGORY_LABEL: Record<Category, string> = {
 };
 export const categoryLabel = (c: Category): string => CATEGORY_LABEL[c];
 export const GENDER = ['남', '여'] as const;
+export type Gender = (typeof GENDER)[number];
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
