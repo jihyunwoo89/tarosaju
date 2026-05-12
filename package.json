@@ -14,7 +14,7 @@
   },
   "author": "jihyunwoo89 <jihyunwoo89@gmail.com>",
   "license": "MIT",
-  "engines": { "node": ">=20.0.0" },
+  "engines": { "node": "20.x" },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
