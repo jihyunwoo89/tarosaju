@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+build
+coverage
+playwright-report
+test-results
+
+# claude.ai/design source files — reference only, not part of the runtime build
+components/jsx/

@@ -36,9 +36,9 @@ describe('buildUserPrompt', () => {
     category: '연애' as const,
     pillars: { year: '庚午', month: '己卯', day: '丙午', hour: '庚寅' },
     cards: [
-      { card: { id: 0,  ko: '바보', en: 'The Fool',   keywords: { upright: ['시작'], reversed: ['지연'] } }, reversed: false, phase: '과거' as const },
-      { card: { id: 6,  ko: '연인', en: 'The Lovers', keywords: { upright: ['결합'], reversed: ['불화'] } }, reversed: true,  phase: '현재' as const },
-      { card: { id: 19, ko: '태양', en: 'The Sun',    keywords: { upright: ['활력'], reversed: ['과열'] } }, reversed: false, phase: '미래' as const },
+      { card: { id: 0,  ko: '바보', en: 'The Fool',   han: '愚', keywords: { upright: ['시작'], reversed: ['지연'] } }, reversed: false, phase: '과거' as const },
+      { card: { id: 6,  ko: '연인', en: 'The Lovers', han: '緣', keywords: { upright: ['결합'], reversed: ['불화'] } }, reversed: true,  phase: '현재' as const },
+      { card: { id: 19, ko: '태양', en: 'The Sun',    han: '日', keywords: { upright: ['활력'], reversed: ['과열'] } }, reversed: false, phase: '미래' as const },
     ],
   };
 
