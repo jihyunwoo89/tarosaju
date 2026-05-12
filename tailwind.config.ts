@@ -8,8 +8,11 @@ const config: Config = {
         surface: 'var(--color-surface)',
         text: 'var(--color-text)',
         muted: 'var(--color-muted)',
+        faint: 'var(--color-faint)',
         border: 'var(--color-border)',
         accent: 'var(--color-accent)',
+        'accent-soft': 'var(--color-accent-soft)',
+        'accent-deep': 'var(--color-accent-deep)',
       },
       fontFamily: {
         display: ['var(--font-display)', 'var(--font-display-kr)', 'serif'],

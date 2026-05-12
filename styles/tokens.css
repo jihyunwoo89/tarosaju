@@ -1,18 +1,35 @@
+/* Tarosaju design tokens — sourced from claude.ai/design (white / cream-gold / black). */
 :root {
-  --color-bg: #FAFAF7;
+  /* Surfaces */
+  --color-bg: #FAF7F0;        /* warm off-white paper */
   --color-surface: #FFFFFF;
-  --color-text: #1A1A1A;
-  --color-muted: #6B6B6B;
-  --color-border: #E8E8E5;
-  --color-accent: #5C1F2C;
+
+  /* Text */
+  --color-text: #0F0E0C;       /* near-black ink */
+  --color-muted: #6B655B;      /* ink soft */
+  --color-faint: #B5AE9F;      /* ink faint — disabled / placeholder */
+
+  /* Lines */
+  --color-border: #1A1813;     /* hairline — used for both rules and borders */
+
+  /* Accent (cream gold — signature) */
+  --color-accent: #B8945A;
+  --color-accent-soft: #E5D5B0;
+  --color-accent-deep: #7A5E2E;
 }
+
+/* Dark mode tokens kept for completeness; v1 design source is light-first.
+   v1.1 will refine these once claude.ai/design ships a dark palette. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #0F0F0E;
-    --color-surface: #1A1A18;
-    --color-text: #F5F5F2;
-    --color-muted: #A8A8A4;
-    --color-border: #2D2D2A;
-    --color-accent: #C76478;
+    --color-bg: #0F0E0C;
+    --color-surface: #1A1813;
+    --color-text: #FAF7F0;
+    --color-muted: #B5AE9F;
+    --color-faint: #6B655B;
+    --color-border: #B5AE9F;
+    --color-accent: #B8945A;
+    --color-accent-soft: #7A5E2E;
+    --color-accent-deep: #E5D5B0;
   }
 }

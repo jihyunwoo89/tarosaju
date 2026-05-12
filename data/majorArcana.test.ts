@@ -21,4 +21,13 @@ describe('majorArcana', () => {
       expect(c.keywords.reversed.length).toBeGreaterThan(0);
     }
   });
+
+  it('each card has a single-character hanja sigil', () => {
+    for (const c of majorArcana) {
+      expect(c.han.length, `${c.ko} (${c.id})`).toBe(1);
+      // unicode CJK unified ideographs block: U+4E00–U+9FFF
+      expect(c.han.codePointAt(0)!).toBeGreaterThanOrEqual(0x4e00);
+      expect(c.han.codePointAt(0)!).toBeLessThanOrEqual(0x9fff);
+    }
+  });
 });
