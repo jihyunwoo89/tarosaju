@@ -21,6 +21,9 @@ export function CardDeck({ onComplete }: Props) {
   const [drawn, setDrawn] = useState<DrawnCard[]>([]);
   const [pickedIndices, setPickedIndices] = useState<number[]>([]);
   const [revealOrder, setRevealOrder] = useState<ArcanaCard[]>([]); // 부채꼴 순서
+  // Mirror of revealOrder for synchronous reads inside setTimeout callbacks
+  // (avoids stale closure when autoPick is called from idle phase).
+  const revealOrderRef = useRef<ArcanaCard[]>([]);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const completedRef = useRef(false);
 
@@ -34,6 +37,7 @@ export function CardDeck({ onComplete }: Props) {
       const j = Math.floor(Math.random() * (i + 1));
       [deck[i], deck[j]] = [deck[j], deck[i]];
     }
+    revealOrderRef.current = deck;
     setRevealOrder(deck);
     timerRef.current = setTimeout(() => setPhase('spread'), reduce ? 50 : 1500);
   }
@@ -79,13 +83,14 @@ export function CardDeck({ onComplete }: Props) {
   }
 
   function autoPickCore() {
+    const order = revealOrderRef.current; // synchronous read — never stale
     const available = Array.from({ length: 22 }, (_, i) => i).filter(i => !pickedIndices.includes(i));
     const shuffled = [...available].sort(() => Math.random() - 0.5);
     const chosen = pickedIndices.slice();
     for (let i = 0; chosen.length < 3 && i < shuffled.length; i++) chosen.push(shuffled[i]);
     setPickedIndices(chosen);
     const picks: DrawnCard[] = chosen.map((idx, phaseI) => ({
-      card: revealOrder[idx],
+      card: order[idx],
       reversed: Math.random() < 0.5,
       phase: PHASES[phaseI],
     }));
