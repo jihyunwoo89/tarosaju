@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 320" width="200" height="320">
-  <rect width="200" height="320" rx="8" fill="#FAFAF7"/>
-  <rect x="8" y="8" width="184" height="304" rx="4" fill="none" stroke="#1A1A1A" stroke-width="1"/>
-  <text x="100" y="40" text-anchor="middle" fill="#1A1A1A" font-family="serif" font-size="12">7</text>
-  <text x="100" y="170" text-anchor="middle" fill="#1A1A1A" font-family="serif" font-size="14">CARD 7</text>
-  <text x="100" y="290" text-anchor="middle" fill="#5C1F2C" font-family="serif" font-size="10">placeholder</text>
-</svg>
