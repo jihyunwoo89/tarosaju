@@ -78,6 +78,34 @@ export function CardDeck({ onComplete }: Props) {
     };
   }
 
+  function autoPickCore() {
+    const available = Array.from({ length: 22 }, (_, i) => i).filter(i => !pickedIndices.includes(i));
+    const shuffled = [...available].sort(() => Math.random() - 0.5);
+    const chosen = pickedIndices.slice();
+    for (let i = 0; chosen.length < 3 && i < shuffled.length; i++) chosen.push(shuffled[i]);
+    setPickedIndices(chosen);
+    const picks: DrawnCard[] = chosen.map((idx, phaseI) => ({
+      card: revealOrder[idx],
+      reversed: Math.random() < 0.5,
+      phase: PHASES[phaseI],
+    }));
+    setDrawn(picks);
+    timerRef.current = setTimeout(() => setPhase('ready'), reduce ? 50 : 600);
+  }
+
+  function autoPick() {
+    if (phase === 'idle') {
+      startShuffle();
+      timerRef.current = setTimeout(() => {
+        autoPickCore();
+      }, reduce ? 100 : 1700);
+      return;
+    }
+    if (phase === 'spread') {
+      autoPickCore();
+    }
+  }
+
   return (
     <div className="relative w-full h-[60vh] flex items-center justify-center overflow-visible">
       {phase === 'idle' && (
@@ -137,6 +165,17 @@ export function CardDeck({ onComplete }: Props) {
           </div>
         )}
       </AnimatePresence>
+
+      {phase !== 'ready' && (
+        <button
+          type="button"
+          onClick={autoPick}
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-muted underline decoration-dotted underline-offset-4"
+          aria-label="자동으로 3 장 뽑기"
+        >
+          자동으로 3 장 뽑기
+        </button>
+      )}
     </div>
   );
 }
