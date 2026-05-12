@@ -1,0 +1,18 @@
+:root {
+  --color-bg: #FAFAF7;
+  --color-surface: #FFFFFF;
+  --color-text: #1A1A1A;
+  --color-muted: #6B6B6B;
+  --color-border: #E8E8E5;
+  --color-accent: #5C1F2C;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0F0F0E;
+    --color-surface: #1A1A18;
+    --color-text: #F5F5F2;
+    --color-muted: #A8A8A4;
+    --color-border: #2D2D2A;
+    --color-accent: #C76478;
+  }
+}
