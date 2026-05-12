@@ -90,7 +90,9 @@ export async function callGemini({ systemPrompt, userPrompt }: CallInput): Promi
       }
       const message = err instanceof Error ? err.message : String(err);
       console.error('[gemini] SDK error:', { model, message, attempt });
-      if (/429|rate/i.test(message)) {
+      // Note: do NOT match a bare /rate/ — Gemini URLs contain "generateContent"
+      // which has "rate" as a substring. Match rate-limit-specific patterns only.
+      if (/\b429\b|RESOURCE_EXHAUSTED|rate[\s_-]?limit/i.test(message)) {
         throw new GeminiError('rate_limited', message);
       }
       throw new GeminiError('upstream_error', message);
