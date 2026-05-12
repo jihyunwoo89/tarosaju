@@ -12,7 +12,7 @@ const config: Config = {
         accent: 'var(--color-accent)',
       },
       fontFamily: {
-        display: ['var(--font-display)', 'serif'],
+        display: ['var(--font-display)', 'var(--font-display-kr)', 'serif'],
         body: ['var(--font-body)', 'system-ui', 'sans-serif'],
       },
     },
