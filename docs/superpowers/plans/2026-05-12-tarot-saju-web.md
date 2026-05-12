@@ -810,6 +810,8 @@ describe('FortuneRequestSchema', () => {
   it('rejects malformed birthDate', () => {
     expect(() => FortuneRequestSchema.parse({ ...validInput, birthDate: '1990/03/15' })).toThrow();
     expect(() => FortuneRequestSchema.parse({ ...validInput, birthDate: '1899-12-31' })).toThrow();
+    expect(() => FortuneRequestSchema.parse({ ...validInput, birthDate: '2001-02-29' })).toThrow();
+    expect(() => FortuneRequestSchema.parse({ ...validInput, birthDate: '2000-13-01' })).toThrow();
   });
 
   it('rejects unknown hourBranch', () => {
@@ -871,7 +873,9 @@ describe('FortuneResponseSchema', () => {
       cards: [validResponse.cards[1], validResponse.cards[0], validResponse.cards[2]],
     })).toThrow();
   });
+});
 
+describe('ErrorCode', () => {
   it('ErrorCode enum has expected members', () => {
     expect(ErrorCode.options).toContain('invalid_input');
     expect(ErrorCode.options).toContain('config_missing');
@@ -895,11 +899,12 @@ npm run test:run -- lib/schema
 
 ```ts
 import { z } from 'zod';
+import { HOUR_BRANCH } from './saju';
+import { PHASES as PHASE } from './tarot';
 
-export const HOUR_BRANCH = ['자','축','인','묘','진','사','오','미','신','유','술','해'] as const;
+export { HOUR_BRANCH, PHASE };
 export const CATEGORY = ['연애', '금전', '학업', '취업'] as const;
 export const GENDER = ['남', '여'] as const;
-export const PHASE = ['과거', '현재', '미래'] as const;
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
@@ -910,7 +915,12 @@ export const FortuneRequestSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .refine(s => s >= '1900-01-01' && s <= todayIso(), {
       message: 'birthDate must be between 1900-01-01 and today',
-    }),
+    })
+    .refine(s => {
+      const [y, m, d] = s.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+    }, { message: 'birthDate must be a real calendar date' }),
   hourBranch: z.enum(HOUR_BRANCH),
   category: z.enum(CATEGORY),
   cards: z.array(z.object({
