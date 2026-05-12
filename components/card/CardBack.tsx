@@ -3,7 +3,7 @@ import Image from 'next/image';
 export function CardBack({ width = 120 }: { width?: number }) {
   return (
     <Image
-      src="/cards/back.svg"
+      src="/cards/back.png"
       alt=""
       width={width}
       height={Math.round(width * 1.6)}

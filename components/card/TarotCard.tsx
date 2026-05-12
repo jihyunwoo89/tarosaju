@@ -7,7 +7,7 @@ export function TarotCard({
   return (
     <figure className="flex flex-col items-center gap-1">
       <Image
-        src={`/cards/${card.id}.svg`}
+        src={`/cards/${card.id}.png`}
         alt={`${card.ko}${reversed ? ' 역방향' : ''}`}
         width={width}
         height={Math.round(width * 1.6)}
