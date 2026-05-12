@@ -1,5 +1,7 @@
 import '@/styles/globals.css';
 import type { Metadata, Viewport } from 'next';
+import { GrainOverlay } from '@/components/ui/GrainOverlay';
+import { ToastHost } from '@/components/ui/Toast';
 import { Fraunces, Noto_Serif_KR } from 'next/font/google';
 import localFont from 'next/font/local';
 
@@ -44,7 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko" className={`${fraunces.variable} ${notoSerifKR.variable} ${pretendard.variable}`}>
       <body className="font-body bg-bg text-text">
+        <GrainOverlay />
         {children}
+        <ToastHost />
       </body>
     </html>
   );
