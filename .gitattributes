@@ -1,0 +1,26 @@
+# Windows + macOS/Linux 공동 작업 시 줄바꿈 통일 (Git 가 자동 변환 X, LF 고정)
+* text=auto eol=lf
+
+# 텍스트 파일 (LF 강제)
+*.ts       text eol=lf
+*.tsx      text eol=lf
+*.js       text eol=lf
+*.mjs      text eol=lf
+*.json     text eol=lf
+*.md       text eol=lf
+*.css      text eol=lf
+*.svg      text eol=lf
+*.html     text eol=lf
+
+# 바이너리 — Git 가 변환·diff 시도 안 함
+*.png      binary
+*.jpg      binary
+*.jpeg     binary
+*.webp     binary
+*.ico      binary
+*.woff     binary
+*.woff2    binary
+*.ttf      binary
+*.otf      binary
+*.pdf      binary
+*.zip      binary

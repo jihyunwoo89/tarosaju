@@ -2,6 +2,18 @@
   "name": "tarosaju",
   "version": "0.1.0",
   "private": true,
+  "description": "사주 명식과 타로 카드 3 장을 한 흐름에서 융합 해석하는 한국어 모바일 웹",
+  "keywords": ["tarot", "saju", "korean", "fortune", "nextjs", "gemini-api"],
+  "homepage": "https://github.com/damiao/tarosaju#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/damiao/tarosaju.git"
+  },
+  "bugs": {
+    "url": "https://github.com/damiao/tarosaju/issues"
+  },
+  "author": "damiao <jihyunwoo89@gmail.com>",
+  "license": "MIT",
   "engines": { "node": ">=20.0.0" },
   "scripts": {
     "dev": "next dev",
