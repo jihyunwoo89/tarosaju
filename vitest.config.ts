@@ -11,5 +11,10 @@ export default defineConfig({
     include: ['**/*.test.{ts,tsx}'],
     exclude: ['**/node_modules/**', '**/.next/**', 'tests/e2e/**'],
   },
-  resolve: { alias: { '@': path.resolve(__dirname, '.') } },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '.'),
+      'server-only': path.resolve(__dirname, 'tests/helpers/server-only-mock.ts'),
+    },
+  },
 });

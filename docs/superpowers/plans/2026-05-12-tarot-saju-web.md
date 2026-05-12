@@ -1309,14 +1309,25 @@ export const validFortune: FortuneResponse = {
   advice: '오늘 안에 한 문장만이라도 전해 보세요. 시간이 답을 미루지 못하게 하는 게 핵심입니다.',
 };
 
-export function mockGeminiOnce(response: FortuneResponse | Error) {
+export function mockGeminiSuccess(response: FortuneResponse = validFortune) {
   vi.doMock('@/lib/gemini', () => ({
-    callGemini: vi.fn(async () => {
-      if (response instanceof Error) throw response;
-      return response;
-    }),
-    GeminiError: class extends Error { constructor(public code: string, m: string) { super(m); } },
+    callGemini: vi.fn(async () => response),
+    GeminiError: class extends Error {
+      constructor(public code: string, m: string) { super(m); }
+    },
   }));
+}
+
+export function mockGeminiError(code: string, message: string) {
+  vi.doMock('@/lib/gemini', () => {
+    class GeminiError extends Error {
+      constructor(public code: string, m: string) { super(m); }
+    }
+    return {
+      callGemini: vi.fn(async () => { throw new GeminiError(code, message); }),
+      GeminiError,
+    };
+  });
 }
 ```
 
@@ -1324,7 +1335,7 @@ export function mockGeminiOnce(response: FortuneResponse | Error) {
 
 ```ts
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { validFortune } from '../helpers/mockGemini';
+import { validFortune, mockGeminiSuccess, mockGeminiError } from '../helpers/mockGemini';
 
 const validBody = {
   name: '홍길동',
@@ -1356,10 +1367,7 @@ describe('POST /api/fortune', () => {
   });
 
   it('returns 200 with pillars + fortune on valid input', async () => {
-    vi.doMock('@/lib/gemini', () => ({
-      callGemini: vi.fn(async () => validFortune),
-      GeminiError: class extends Error { constructor(public code: string, m: string) { super(m); } },
-    }));
+    mockGeminiSuccess();
     const res = await callRoute(validBody);
     expect(res.status).toBe(200);
     const json = await res.json();
@@ -1394,13 +1402,7 @@ describe('POST /api/fortune', () => {
   });
 
   it('returns 502 upstream_error on generic Gemini failure', async () => {
-    vi.doMock('@/lib/gemini', () => {
-      class GeminiError extends Error { constructor(public code: string, m: string) { super(m); } }
-      return {
-        callGemini: vi.fn(async () => { throw new GeminiError('upstream_error', 'boom'); }),
-        GeminiError,
-      };
-    });
+    mockGeminiError('upstream_error', 'boom');
     const res = await callRoute(validBody);
     expect(res.status).toBe(502);
     const json = await res.json();
@@ -1409,13 +1411,7 @@ describe('POST /api/fortune', () => {
   });
 
   it('returns 503 rate_limited on 429', async () => {
-    vi.doMock('@/lib/gemini', () => {
-      class GeminiError extends Error { constructor(public code: string, m: string) { super(m); } }
-      return {
-        callGemini: vi.fn(async () => { throw new GeminiError('rate_limited', '429'); }),
-        GeminiError,
-      };
-    });
+    mockGeminiError('rate_limited', '429');
     const res = await callRoute(validBody);
     expect(res.status).toBe(503);
     const json = await res.json();
@@ -1424,13 +1420,7 @@ describe('POST /api/fortune', () => {
   });
 
   it('returns 504 timeout', async () => {
-    vi.doMock('@/lib/gemini', () => {
-      class GeminiError extends Error { constructor(public code: string, m: string) { super(m); } }
-      return {
-        callGemini: vi.fn(async () => { throw new GeminiError('timeout', 'abort'); }),
-        GeminiError,
-      };
-    });
+    mockGeminiError('timeout', 'abort');
     const res = await callRoute(validBody);
     expect(res.status).toBe(504);
     const json = await res.json();
@@ -1439,13 +1429,7 @@ describe('POST /api/fortune', () => {
   });
 
   it('returns 500 parse_failed when schema retry exhausted', async () => {
-    vi.doMock('@/lib/gemini', () => {
-      class GeminiError extends Error { constructor(public code: string, m: string) { super(m); } }
-      return {
-        callGemini: vi.fn(async () => { throw new GeminiError('parse_failed', 'bad json'); }),
-        GeminiError,
-      };
-    });
+    mockGeminiError('parse_failed', 'bad json');
     const res = await callRoute(validBody);
     expect(res.status).toBe(500);
     const json = await res.json();
@@ -1498,11 +1482,17 @@ export async function POST(req: Request) {
     return fail('saju_calc_failed', 500, false, e instanceof Error ? e.message : String(e));
   }
 
-  const drawnCards = input.cards.map((c, i) => {
-    const card = majorArcana.find(a => a.id === c.id);
-    if (!card) throw new Error(`unknown card id ${c.id}`);
-    return { card, reversed: c.reversed, phase: PHASES[i] };
-  });
+  let drawnCards;
+  try {
+    // cards[0]=과거, cards[1]=현재, cards[2]=미래 — positional ordering is part of the contract
+    drawnCards = input.cards.map((c, i) => {
+      const card = majorArcana.find(a => a.id === c.id);
+      if (!card) throw new Error(`unknown card id ${c.id}`);
+      return { card, reversed: c.reversed, phase: PHASES[i] };
+    });
+  } catch (e) {
+    return fail('invalid_input', 400, false, e instanceof Error ? e.message : String(e));
+  }
 
   try {
     const fortune = await callGemini({
