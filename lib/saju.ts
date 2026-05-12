@@ -22,7 +22,6 @@ export function computePillars(input: SajuInput): Pillars {
     throw new Error(`Year out of range: ${input.year}`);
   }
   const hour = HOUR_BRANCH_TO_TIME[input.hourBranch];
-  // @ts-expect-error - lunar-javascript has no proper types
   const solar = Solar.fromYmdHms(input.year, input.month, input.day, hour, 0, 0);
   const ec = solar.getLunar().getEightChar();
   return {

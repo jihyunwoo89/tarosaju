@@ -482,6 +482,10 @@ npm run test:run -- lib/saju
 
 - [ ] **Step 3: 구현 (lib/saju.ts)**
 
+Note: `lunar-javascript` ships no `.d.ts` and `@types/lunar-javascript` does not exist on npm.
+`types/lunar-javascript.d.ts` declares the module as ambient so the import type-checks (all exports are `any`).
+The `@ts-expect-error` directive on the `Solar.fromYmdHms` call is therefore not needed and is omitted.
+
 ```ts
 import { Solar } from 'lunar-javascript';
 
@@ -507,8 +511,6 @@ export function computePillars(input: SajuInput): Pillars {
     throw new Error(`Year out of range: ${input.year}`);
   }
   const hour = HOUR_BRANCH_TO_TIME[input.hourBranch];
-  // lunar-javascript 는 CommonJS ESM 혼합 — default 임포트 X
-  // @ts-expect-error - lunar-javascript has no proper types
   const solar = Solar.fromYmdHms(input.year, input.month, input.day, hour, 0, 0);
   const ec = solar.getLunar().getEightChar();
   return {
