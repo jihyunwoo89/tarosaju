@@ -29,7 +29,7 @@ export default function ResultPage() {
 
   if (state.status === 'loading' || !canCall) return <LoadingState />;
   if (state.status === 'error') {
-    return <ErrorState code={state.code} retryable={state.retryable} onRetry={retry} />;
+    return <ErrorState code={state.code} retryable={state.retryable} onRetry={retry} message={state.message} />;
   }
 
   function onRestart() {
