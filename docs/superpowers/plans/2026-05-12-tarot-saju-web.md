@@ -54,7 +54,7 @@
 | `app/page.tsx` | 홈 | 13 |
 | `app/profile/page.tsx`, `components/form/{ProfileForm, BirthTimePicker}.tsx` | 정보 입력 | 14 |
 | `app/category/page.tsx` | 카테고리 선택 | 15 |
-| `components/card/{TarotCard, CardBack, CardDeck, CardSpread, CardFlip}.tsx` | 카드 컴포넌트 군 | 16 |
+| `components/card/{TarotCard, CardBack, CardDeck, CardFlip}.tsx` | 카드 컴포넌트 군 | 16 |
 | `app/draw/page.tsx` | 드로우 (시그니처 1) | 17 |
 | `components/result/{SajuPillars, FortuneNarrative, ResultHeader, FortuneRevealOrchestrator}.tsx` | 결과 화면 컴포넌트 군 | 18 |
 | `app/result/page.tsx` | 결과 (시그니처 2) | 19 |
@@ -2461,11 +2461,11 @@ export function CardFlip({ card, reversed, flipped, width = 120, delaySec = 0 }:
 
 ```tsx
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
 import { CardBack } from './CardBack';
 import { majorArcana, type ArcanaCard } from '@/data/majorArcana';
-import { drawThree, type DrawnCard } from '@/lib/tarot';
+import { PHASES, type DrawnCard } from '@/lib/tarot';
 
 type Phase = 'idle' | 'shuffling' | 'spread' | 'ready';
 
@@ -2483,25 +2483,21 @@ export function CardDeck({ onComplete }: Props) {
   const [drawn, setDrawn] = useState<DrawnCard[]>([]);
   const [pickedIndices, setPickedIndices] = useState<number[]>([]);
   const [revealOrder, setRevealOrder] = useState<ArcanaCard[]>([]); // 부채꼴 순서
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const completedRef = useRef(false);
 
   // shuffle 시작
   function startShuffle() {
     if (phase !== 'idle') return;
     setPhase('shuffling');
-    const result = drawThree();
-    setDrawn(result);
-    // 부채꼴 순서: 결정된 3장이 부채꼴 중 어느 위치에 갈지 — 단순화: 부채꼴 = majorArcana 셔플 결과
-    const deck = [...majorArcana].sort(() => Math.random() - 0.5);
-    // 결과 3장이 부채꼴 안에 포함되도록 우선 자리 배치
-    const ids = new Set(result.map(d => d.card.id));
-    const others = deck.filter(c => !ids.has(c.id));
-    const positions: ArcanaCard[] = Array.from({ length: TOTAL });
-    const slotIdx = [4, 11, 17]; // 부채꼴 22장 중 3장이 위치할 슬롯 (좌/중/우 부근)
-    slotIdx.forEach((p, i) => { positions[p] = result[i].card; });
-    let oi = 0;
-    for (let i = 0; i < TOTAL; i++) if (!positions[i]) positions[i] = others[oi++];
-    setRevealOrder(positions);
-    setTimeout(() => setPhase('spread'), reduce ? 50 : 1500);
+    // 부채꼴 = 22장 랜덤 셔플 (Fisher-Yates)
+    const deck = [...majorArcana];
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    setRevealOrder(deck);
+    timerRef.current = setTimeout(() => setPhase('spread'), reduce ? 50 : 1500);
   }
 
   function onPickByIdx(i: number) {
@@ -2510,13 +2506,29 @@ export function CardDeck({ onComplete }: Props) {
     const next = [...pickedIndices, i];
     setPickedIndices(next);
     if (next.length === 3) {
-      setTimeout(() => setPhase('ready'), 600);
+      const picks: DrawnCard[] = next.map((idx, phaseI) => ({
+        card: revealOrder[idx],
+        reversed: Math.random() < 0.5,
+        phase: PHASES[phaseI],
+      }));
+      setDrawn(picks);
+      timerRef.current = setTimeout(() => setPhase('ready'), 600);
     }
   }
 
   useEffect(() => {
-    if (phase === 'ready') onComplete(drawn);
+    if (phase === 'ready' && !completedRef.current) {
+      completedRef.current = true;
+      onComplete(drawn);
+    }
   }, [phase, drawn, onComplete]);
+
+  // unmount 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   // 부채꼴 좌표 계산
   function spreadStyle(i: number) {
