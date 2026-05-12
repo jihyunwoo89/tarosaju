@@ -89,6 +89,7 @@ export async function callGemini({ systemPrompt, userPrompt }: CallInput): Promi
         throw new GeminiError('timeout', `Gemini call timed out after ${TIMEOUT_MS}ms`);
       }
       const message = err instanceof Error ? err.message : String(err);
+      console.error('[gemini] SDK error:', { model, message, attempt });
       if (/429|rate/i.test(message)) {
         throw new GeminiError('rate_limited', message);
       }
