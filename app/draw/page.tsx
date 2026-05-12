@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/Button';
 import { useSession } from '@/store/session';
 import { useState } from 'react';
 import type { DrawnCard } from '@/lib/tarot';
+import { useRouteGuard } from '@/lib/use-route-guard';
 
 export default function DrawPage() {
+  useRouteGuard(['profile', 'category']);
   const router = useRouter();
   const setCards = useSession(s => s.setCards);
   const [done, setDone] = useState<DrawnCard[] | null>(null);

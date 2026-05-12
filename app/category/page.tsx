@@ -1,7 +1,10 @@
+'use client';
 import { ProgressDots } from '@/components/ui/ProgressDots';
 import { CategoryGrid } from '@/components/form/CategoryGrid';
+import { useRouteGuard } from '@/lib/use-route-guard';
 
 export default function CategoryPage() {
+  useRouteGuard(['profile']);
   return (
     <main className="min-h-[100dvh] py-10">
       <ProgressDots current={2} total={3} />
